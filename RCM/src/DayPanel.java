@@ -1,3 +1,4 @@
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,7 +21,7 @@ public class DayPanel extends JPanel {
 	CustomDate curDate;
 	
 	ArrayList<JButton> lessonB;
-	Map<JButton, Lesson> buttonToLessonMap;
+	Map<LessonButton, Lesson> buttonToLessonMap;
 	JLabel dateLabel;
 	JPanel lessonArea;
 	
@@ -33,22 +34,31 @@ public class DayPanel extends JPanel {
 		this.setLayout(layout);
 		
 		lessonB = new ArrayList<JButton>();
-		buttonToLessonMap = new HashMap<JButton, Lesson>();
+		buttonToLessonMap = new HashMap<LessonButton, Lesson>();
 		
-		dateLabel = new JLabel("" + curDate.getDay());
+		dateLabel = new JLabel(curDate.toString());
 		
 		lessonArea = new JPanel();
 		lessonLayout = new SpringLayout();
 		lessonArea.setLayout(lessonLayout);
 		
-		createMappings();
+		createButtonToLessonMappings();
 		addActionListener();
 		addComponents();
 		buildUI();
 	}
-
-	private void createMappings()
+	
+	@Override
+	public void setBounds(int x, int y, int width, int height)
 	{
+		
+		super.setBounds(x,y,width,height);
+		lessonArea.setPreferredSize(new Dimension(this.getBounds().width - 16, this.getBounds().height - 20));
+	}
+
+	private void createButtonToLessonMappings()
+	{
+		lessonB.clear();
 		Map<CustomDate, ArrayList<Lesson>> lessonMap = calModel.model.getLessonListWithDates();
 		ArrayList<Lesson> lessons = new ArrayList<Lesson>();
 		if(lessonMap.containsKey(curDate))
@@ -67,7 +77,8 @@ public class DayPanel extends JPanel {
 			int endMin = curLesson.getEndDate().get(Calendar.MINUTE);
 			String endTime = "" + endHour + ":" + endMin;
 			
-			JButton tempB = new JButton(lessonNum + ":  " + startTime + "  -  " + endTime);
+			String buttonText = (lessonNum + ":  " + startTime + "  -  " + endTime);
+			LessonButton tempB = new LessonButton(buttonText);
 			lessonB.add(tempB);
 			
 			buttonToLessonMap.put(tempB, curLesson);
@@ -86,7 +97,7 @@ public class DayPanel extends JPanel {
 					Lesson clickedLesson = buttonToLessonMap.get(tmpB);
 					calModel.model.frame.currentPanel.setVisible(false);
 					calModel.model.frame.remove(calModel.model.frame.currentPanel);
-					calModel.model.frame.setSize(new Dimension(500, 700));
+					calModel.model.frame.setSize(new Dimension(500, 800));
 					calModel.model.frame.setLocationRelativeTo(null);
 					LessonPanel lp = new LessonPanel(calModel.model, clickedLesson, "Calendar");
 					lp.setVisible(true);
@@ -95,17 +106,17 @@ public class DayPanel extends JPanel {
 			});
 		}
 	}
-
+	
 	private void addComponents()
 	{
 		dateLabel.setPreferredSize(new Dimension(130, 25));
 		this.add(dateLabel);
 		
+		lessonArea.setPreferredSize(new Dimension(this.getBounds().width - 16, this.getBounds().height - 20));
 		this.add(lessonArea);
 		
 		for(int i = 0; i < lessonB.size(); i++)
 		{
-			lessonB.get(i).setPreferredSize(new Dimension(130, 25));
 			lessonArea.add(lessonB.get(i));
 		}
 	
@@ -118,7 +129,7 @@ public class DayPanel extends JPanel {
 		layout.putConstraint(SpringLayout.NORTH, dateLabel, 2, SpringLayout.NORTH, this);
 		
 		layout.putConstraint(SpringLayout.WEST,	lessonArea, 0, SpringLayout.WEST, dateLabel);
-		layout.putConstraint(SpringLayout.NORTH, lessonArea, 10, SpringLayout.NORTH, dateLabel);
+		layout.putConstraint(SpringLayout.NORTH, lessonArea, 10, SpringLayout.SOUTH, dateLabel);
 		
 		for(int i = 0; i < lessonB.size(); i++)
 		{
@@ -135,16 +146,20 @@ public class DayPanel extends JPanel {
 	}
 	
 	public void refresh(CustomDate newDate){
-		System.out.println("Refreshing");
 		curDate = newDate;
 		
-		dateLabel.setText(String.valueOf(curDate.getDay()));
-		createMappings();
+		dateLabel.setText(curDate.toString());
+		
+		
+		lessonArea = new JPanel();
+		lessonLayout = new SpringLayout();
+		lessonArea.setLayout(lessonLayout);
+		
+		
+		createButtonToLessonMappings();
 		addActionListener();
 		addComponents();
 		buildUI();
-		
-		this.revalidate();
-		
+				
 	}
 }

@@ -1,3 +1,4 @@
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileInputStream;
@@ -44,6 +45,7 @@ public class Model implements ActionListener {
 	public void toMainMenu() {
 		frame.currentPanel.setVisible(false);
 		frame.remove(frame.currentPanel);
+		frame.setSize(new Dimension(500, 800));
 		MainMenuPanel main = new MainMenuPanel(this);
 		main.setVisible(true);
 	}

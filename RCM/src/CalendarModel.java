@@ -19,7 +19,7 @@ public class CalendarModel {
 	
 	public void setSelectedDate(CustomDate selectedDate)
 	{
-		System.out.println("New Date: " + selectedDate.toString());
+		//System.out.println("New Date: " + selectedDate.toString());
 		this.selectedDate = selectedDate;
 		update();
 	}

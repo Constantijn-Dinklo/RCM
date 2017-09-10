@@ -64,9 +64,6 @@ public class CalendarPanel extends JPanel {
 		calendarArea = new JPanel();
 		calendarArea.setLayout(null);
 		calendarArea.setBorder(BorderFactory.createTitledBorder("Calendar"));
-		
-		//dayArea.setLayout(null);
-
 				
 		GregorianCalendar cal = new GregorianCalendar();
 		realDay = cal.get(GregorianCalendar.DAY_OF_MONTH);
@@ -107,7 +104,7 @@ public class CalendarPanel extends JPanel {
 		addActionListener();
 		buildUI();
 		
-		frame.setSize(new Dimension(1200,770));
+		frame.setSize(new Dimension(1300,800));
 		//frame.setLocationRelativeTo(null);
 		frame.getContentPane().add(this, BorderLayout.CENTER);
 		
@@ -290,8 +287,11 @@ public class CalendarPanel extends JPanel {
 		public Component getTableCellEditorComponent(JTable table, Object value, boolean selected, int row, int column) {
 			if(value != null)
 			{
-				CalendarCellPanel datePanel = (CalendarCellPanel) value;
-				refreshCalendar(currentMonth, currentYear);
+				//CalendarCellPanel datePanel = (CalendarCellPanel) value;
+				//refreshCalendar(currentMonth, currentYear); // For some reason the CalendarCellPanel that is return disappears, so we simply refresh the entire calendar.
+				
+				CalendarCellPanel datePanel = (CalendarCellPanel) getTableCellRendererComponent(table, value, selected, false, row, column);
+				
 				return datePanel;
 			}
 			return null;
