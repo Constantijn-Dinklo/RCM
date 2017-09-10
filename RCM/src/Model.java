@@ -202,7 +202,8 @@ public class Model implements ActionListener {
 			Lesson curLesson = lessonIterator.next();
 			//System.out.println("Checking Lesson");
 			if (exactSameDate(startDate, curLesson.getStartDate()) && 
-				exactSameDate(endDate, curLesson.getEndDate())){
+				exactSameDate(endDate, curLesson.getEndDate()) &&
+				(lessonNum == curLesson.getLessonNum())){
 				return true;
 			}
 		}

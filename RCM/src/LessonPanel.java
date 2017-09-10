@@ -45,7 +45,7 @@ public class LessonPanel extends JPanel {
 	String varient;
 	Lesson curLesson;
 	LessonType curLessonType;
-	
+		
 	public LessonPanel (Model model, Lesson lesson, String varient){
 
 		this.model = model;
@@ -110,6 +110,8 @@ public class LessonPanel extends JPanel {
 			horse.setEditable(false);
 			horseFields.add(horse);
 		}
+		
+		
 		
 		if (lesson != null)
 		{
