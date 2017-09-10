@@ -19,7 +19,7 @@ public class MainFrame extends JFrame {
 		this.pack();
 		this.setSize(new Dimension(500, 700));
 		this.setLocationRelativeTo(null);
-		this.setResizable(false); //for easier UI design for now!
+		this.setResizable(true); //for easier UI design, not modifying the elements when resizing yet.
 		this.setVisible(true);
 	}
 	

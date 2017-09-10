@@ -278,7 +278,7 @@ public class LessonPanel extends JPanel {
 					{
 						newLesson.pair();
 					}
-					catch(NotEnoughHorses neh)
+					catch(NotEnoughHorsesException neh)
 					{
 						JOptionPane.showMessageDialog(null, "Not enough horses that fit the specifications for this lesson, need " + neh.numHorsesNeeded + " more horse(s)", "Error", JOptionPane.ERROR_MESSAGE);
 						return;
