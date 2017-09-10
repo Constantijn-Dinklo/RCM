@@ -19,7 +19,7 @@ public class MainMenuPanel extends JPanel
 	JButton addPersonB, updatePersonB, removePersonB;
 	JButton addLessonB, updateLessonB, removeLessonB;
 	JButton viewScheduleB, calendarB;
-	JButton saveB;
+	JButton saveB, exitB;
 
 	public MainMenuPanel(Model model)
 	{
@@ -44,6 +44,7 @@ public class MainMenuPanel extends JPanel
 		viewScheduleB = new JButton("Display Schedule");
 		calendarB = new JButton("Calendar");
 		saveB = new JButton("Save");
+		exitB = new JButton("Exit");
 
 		//Setting Size for Buttons
 		addHorseB.setMaximumSize(new Dimension(200, 30));
@@ -58,6 +59,7 @@ public class MainMenuPanel extends JPanel
 		viewScheduleB.setMaximumSize(new Dimension(200, 30));
 		calendarB.setMaximumSize(new Dimension(200, 30));;
 		saveB.setMaximumSize(new Dimension(200, 30));
+		exitB.setMaximumSize(new Dimension(200, 30));
 
 		//adding actionlistner
 		addHorseB.addActionListener(model);
@@ -72,6 +74,7 @@ public class MainMenuPanel extends JPanel
 		viewScheduleB.addActionListener(model);
 		calendarB.addActionListener(model);
 		saveB.addActionListener(model);
+		exitB.addActionListener(model);
 
 		title.setMaximumSize(new Dimension(200, 30));
 		title.setHorizontalAlignment(SwingConstants.CENTER);
@@ -103,6 +106,8 @@ public class MainMenuPanel extends JPanel
 		this.add(calendarB);
 		this.add(Box.createRigidArea(new Dimension(0, 40)));
 		this.add(saveB);
+		this.add(Box.createRigidArea(new Dimension(0,5)));
+		this.add(exitB);
 
 		frame.getContentPane().add(this, BorderLayout.CENTER);
 		

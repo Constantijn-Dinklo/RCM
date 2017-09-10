@@ -134,7 +134,7 @@ public class Lesson
 	//Creates Horse,Person pairs for this lesson. 
 	//Uses the proffered horses of a person as a base guideline, but mostly uses randomness to avoid
 	//  getting similar pairs multiple weeks in a row (if a lesson is held multiple weeks in a row, is is normally the case)
-	public void pair() throws NotEnoughHorses
+	public void pair() throws NotEnoughHorsesException
 	{
 		buildList();
 		arrayPair.print();
@@ -186,7 +186,7 @@ public class Lesson
 				pairs.add(new Pair(students.get(i), availableHorses.get(randNum)));
 			}
 			else{
-				throw new NotEnoughHorses(students.size());
+				throw new NotEnoughHorsesException(students.size());
 			}
 		}
 		paired = true;

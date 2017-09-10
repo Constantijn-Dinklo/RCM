@@ -175,12 +175,9 @@ public class Model implements ActionListener {
 		}
 		lessonList.remove(lesson);
 		
-		Calendar date = lesson.getStartDate();
-		/*Calendar newDate = Calendar.getInstance();
-		newDate.setTimeZone(TimeZone.getTimeZone("Europe/Amsterdam"));
-		newDate.set(date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH), 0, 0, 0);*/
+		CustomDate newDate = new CustomDate(lessonDate.get(Calendar.YEAR), lessonDate.get(Calendar.MONTH), lessonDate.get(Calendar.DAY_OF_MONTH));
+		
 		//Make sure that this date actually exists in the data base.
-		CustomDate newDate = new CustomDate(date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH));
 		if (lessonListWithDate.containsKey(newDate))
 		{
 			ArrayList<Lesson> tempLessonList = lessonListWithDate.get(newDate);
@@ -613,6 +610,10 @@ public class Model implements ActionListener {
 		else if (e.getActionCommand().equals("Save"))
 		{
 			toJSON();
+		}
+		else if (e.getActionCommand().equals("Exit"))
+		{
+			System.exit(0);
 		}
 	}
 	

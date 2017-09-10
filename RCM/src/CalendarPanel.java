@@ -107,8 +107,8 @@ public class CalendarPanel extends JPanel {
 		addActionListener();
 		buildUI();
 		
-		frame.setSize(new Dimension(1200,670));
-		frame.setLocationRelativeTo(null);
+		frame.setSize(new Dimension(1200,770));
+		//frame.setLocationRelativeTo(null);
 		frame.getContentPane().add(this, BorderLayout.CENTER);
 		
 		frame.currentPanel = this;
