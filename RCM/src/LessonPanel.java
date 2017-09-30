@@ -2,6 +2,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -10,10 +12,14 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.SpringLayout;
 
 import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
@@ -23,6 +29,8 @@ import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 public class LessonPanel extends JPanel {
 	
 	final int NUMPEOPLE = 10;
+	
+	JLayeredPane thisPanel;
 	
 	Model model;
 	MainFrame frame;
@@ -36,18 +44,27 @@ public class LessonPanel extends JPanel {
 	ButtonGroup typeGroup;
 	JRadioButton normalR, jumpR;
 	
-	ArrayList<JComboBox<Person>> personComboBoxes;
+	ArrayList<CustomComboBox<Person>> personComboBoxes;
 	ArrayList<JComboBox<Horse>> horseComboBoxes;
 	ArrayList<JTextField> horseFields;
+	
+	ArrayList<JTextField> peopleFields;
 	
 	JButton varientB, cancelB;
 	
 	String varient;
 	Lesson curLesson;
 	LessonType curLessonType;
+	
+	JList<Person> peopleList;
+	JScrollPane peopleListPane;
+	JList<Horse> horseList;
+	
+	//AutoCompleteDecorator decorator;
 		
 	public LessonPanel (Model model, Lesson lesson, String varient){
 
+		thisPanel = new JLayeredPane();
 		this.model = model;
 		this.curLesson = lesson;
 		this.varient = varient;
@@ -77,25 +94,43 @@ public class LessonPanel extends JPanel {
 		
 		typeGroup.add(normalR);
 		typeGroup.add(jumpR);
+		
+		normalR.setSelected(true);
 
 		//Creates the Date picker
 		UtilCalendarModel calModel = new UtilCalendarModel();
 		datePanel = new JDatePanelImpl(calModel);
 		datePicker = new JDatePickerImpl(datePanel);
+		
+		Calendar tmpCal = Calendar.getInstance();
+		
+		datePicker.getModel().setDate(tmpCal.get(Calendar.YEAR), tmpCal.get(Calendar.MONTH), tmpCal.get(Calendar.DAY_OF_MONTH));
+		datePicker.getModel().setSelected(true);
+		
+		peopleList = new JList(model.getPersonList().toArray());
+		peopleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		peopleList.setLayoutOrientation(JList.VERTICAL);
+		peopleList.setVisibleRowCount(-1);
+		
+		peopleListPane = new JScrollPane(peopleList);
+		
 
 		//Creating all the ComboBox's
-		personComboBoxes = new ArrayList<JComboBox<Person> >();
+		personComboBoxes = new ArrayList<CustomComboBox<Person> >();
 		horseComboBoxes = new ArrayList<JComboBox<Horse>>();
+		peopleFields = new ArrayList<JTextField>();
 		horseFields = new ArrayList<JTextField>();
 		for (int boxNum = 0; boxNum < NUMPEOPLE; boxNum++)
 		{
-			JComboBox<Person> personBox = new JComboBox<Person>();
+			CustomComboBox<Person> personBox = new CustomComboBox<Person>();
 			personBox.addItem(null);
 			for (int i = 0; i < model.getPersonList().size(); i++)
 			{
 				personBox.addItem(model.getPersonList().get(i));
 			}
 			personComboBoxes.add(personBox);
+			//AutoCompleteDecorator.decorate(personBox);
+			
 			
 			JComboBox<Horse> horseBox = new JComboBox<Horse>();
 			horseBox.addItem(null);
@@ -106,6 +141,10 @@ public class LessonPanel extends JPanel {
 			horseComboBoxes.add(horseBox);
 			
 
+			JTextField person = new JTextField();
+			peopleFields.add(person);
+			
+			
 			JTextField horse = new JTextField();
 			horse.setEditable(false);
 			horseFields.add(horse);
@@ -151,14 +190,58 @@ public class LessonPanel extends JPanel {
 		varientB = new JButton(varient);
 		cancelB = new JButton("Cancel");
 		
+		addFieldListeners();
 		addActionListener();
 		buildUI();
 
+		frame.setSize(new Dimension(700,800));
+		
 		frame.getContentPane().add(this, BorderLayout.CENTER);
 		
 		frame.currentPanel = this;
 	}
 	
+	private void addFieldListeners()
+	{
+		for(int i = 0; i < NUMPEOPLE; i++)
+		{
+			peopleFields.get(i).addKeyListener(new KeyListener(){
+
+				@Override
+				public void keyPressed(KeyEvent e) {
+					// TODO Auto-generated method stub
+					//System.out.println("Pressed");
+				}
+
+				@Override
+				public void keyReleased(KeyEvent e) {
+					// TODO Auto-generated method stub
+					//System.out.println("Released");
+				}
+
+				@Override
+				public void keyTyped(KeyEvent e) {
+					// TODO Auto-generated method stub
+					System.out.println("Typed");
+					System.out.println(e.getSource());
+					
+					JTextField curTextField = (JTextField) e.getSource();
+					
+					peopleListPane.setPreferredSize(new Dimension(80,100));
+					thisPanel.add(peopleListPane);
+					
+					layout.putConstraint(SpringLayout.WEST,	peopleListPane, 0, SpringLayout.WEST, curTextField);
+					layout.putConstraint(SpringLayout.NORTH, peopleListPane, 0, SpringLayout.SOUTH, curTextField);
+					
+					thisPanel.repaint();
+					thisPanel.revalidate();
+					
+				}
+				
+			});
+		}
+	}
+
 	private void addActionListener(){
 		varientB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -177,6 +260,7 @@ public class LessonPanel extends JPanel {
 				
 				System.out.println("Getting people");
 
+				int numPeopleInLesson = 0;
 				//Add all students selected to be in this lesson
 				for (int i = 0; i < personComboBoxes.size(); i++)
 				{
@@ -186,12 +270,28 @@ public class LessonPanel extends JPanel {
 						//Prevent the same person from being added twice
 						if (!(studentsOfLesson.contains((Person)p)))
 							studentsOfLesson.add((Person)p);
+						numPeopleInLesson++;
+						
 					}
+				}
+				
+				if (numPeopleInLesson == 0)
+				{
+					System.out.println("Need at least 1 person in the lesson");
+					JOptionPane.showMessageDialog(null, "Need at least 1 student in the lesson", "Error", JOptionPane.ERROR_MESSAGE);
+					return;
 				}
 				
 				System.out.println("Getting date");
 
 				Calendar selectedDay = (Calendar) datePicker.getModel().getValue();
+				if (selectedDay == null)
+				{
+					System.out.println("Need a date for the lesson");
+					JOptionPane.showMessageDialog(null, "Need a date for the lesson", "Error", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				
 
 				String startSelectedTime = startTimeField.getText().replace(" ", "");
 				String endSelectedTime = endTimeField.getText().replace(" ", "");
@@ -321,13 +421,20 @@ public class LessonPanel extends JPanel {
 	
 	private void buildUI(){
 		final int VIRTICALGAP = 40;
+		final int HORIZONTAL_GAP = 10;
 		
+		studentLabel.setPreferredSize(new Dimension(130, 23));
 		this.add(studentLabel);
+		horseLabel.setPreferredSize(new Dimension(130, 23));
 		this.add(horseLabel);
 		
 		for (int i = 0; i < NUMPEOPLE; i++)
 		{
+			personComboBoxes.get(i).setPreferredSize(new Dimension(130, 23));
 			this.add(personComboBoxes.get(i));
+			//peopleFields.get(i).setPreferredSize(new Dimension(80, 23));
+			//this.add(peopleFields.get(i));
+			
 			horseFields.get(i).setPreferredSize(new Dimension(130, 23));
 			this.add(horseFields.get(i));
 		}
@@ -356,10 +463,10 @@ public class LessonPanel extends JPanel {
 		this.add(varientB);
 		this.add(cancelB);
 
-		layout.putConstraint(SpringLayout.WEST, studentLabel, 170, SpringLayout.WEST, this);
+		layout.putConstraint(SpringLayout.WEST, studentLabel, HORIZONTAL_GAP, SpringLayout.EAST, lessonNumLabel);
 		layout.putConstraint(SpringLayout.NORTH, studentLabel, VIRTICALGAP, SpringLayout.NORTH, this);
 		
-		layout.putConstraint(SpringLayout.WEST,	horseLabel, 100, SpringLayout.WEST, studentLabel);
+		layout.putConstraint(SpringLayout.WEST,	horseLabel, 30, SpringLayout.EAST, studentLabel);
 		layout.putConstraint(SpringLayout.NORTH, horseLabel, VIRTICALGAP, SpringLayout.NORTH, this);
 
 		for(int i = 0; i < NUMPEOPLE; i++)
@@ -367,6 +474,9 @@ public class LessonPanel extends JPanel {
 			layout.putConstraint(SpringLayout.WEST, personComboBoxes.get(i), 0, SpringLayout.WEST, studentLabel);
 			layout.putConstraint(SpringLayout.NORTH, personComboBoxes.get(i), (20 + (i * 30)), SpringLayout.NORTH, studentLabel);
 		
+			//layout.putConstraint(SpringLayout.WEST, peopleFields.get(i), 0, SpringLayout.WEST, studentLabel);
+			//layout.putConstraint(SpringLayout.NORTH, peopleFields.get(i), (20 + (i * 30)), SpringLayout.NORTH, studentLabel);
+			
 			layout.putConstraint(SpringLayout.WEST, horseFields.get(i), 0, SpringLayout.WEST, horseLabel);
 			layout.putConstraint(SpringLayout.NORTH, horseFields.get(i), (20 + (i * 30)), SpringLayout.NORTH, horseLabel);
 		}
@@ -374,13 +484,13 @@ public class LessonPanel extends JPanel {
 		layout.putConstraint(SpringLayout.WEST, dateLabel, 70, SpringLayout.WEST, this);
 		layout.putConstraint(SpringLayout.NORTH, dateLabel, VIRTICALGAP, SpringLayout.NORTH, personComboBoxes.get(NUMPEOPLE - 1));
 		
-		layout.putConstraint(SpringLayout.WEST, datePicker, 100, SpringLayout.WEST, dateLabel);
+		layout.putConstraint(SpringLayout.WEST, datePicker, HORIZONTAL_GAP, SpringLayout.EAST, lessonNumLabel);
 		layout.putConstraint(SpringLayout.NORTH, datePicker, VIRTICALGAP, SpringLayout.NORTH, personComboBoxes.get(NUMPEOPLE - 1));
 		
 		layout.putConstraint(SpringLayout.WEST, typeLabel, 70, SpringLayout.WEST, this);
 		layout.putConstraint(SpringLayout.NORTH, typeLabel, VIRTICALGAP, SpringLayout.NORTH, datePicker);
 		
-		layout.putConstraint(SpringLayout.WEST, normalR, 100, SpringLayout.WEST, typeLabel);
+		layout.putConstraint(SpringLayout.WEST, normalR, HORIZONTAL_GAP, SpringLayout.EAST, lessonNumLabel);
 		layout.putConstraint(SpringLayout.NORTH, normalR, VIRTICALGAP, SpringLayout.NORTH, datePicker);
 		
 		layout.putConstraint(SpringLayout.WEST, jumpR, 100, SpringLayout.WEST,  normalR);
@@ -389,7 +499,7 @@ public class LessonPanel extends JPanel {
 		layout.putConstraint(SpringLayout.WEST, startTimeLabel, 70, SpringLayout.WEST, this);
 		layout.putConstraint(SpringLayout.NORTH, startTimeLabel, VIRTICALGAP, SpringLayout.NORTH, typeLabel);
 
-		layout.putConstraint(SpringLayout.WEST, startTimeField, 100, SpringLayout.WEST, startTimeLabel);
+		layout.putConstraint(SpringLayout.WEST, startTimeField, HORIZONTAL_GAP, SpringLayout.EAST, lessonNumLabel);
 		layout.putConstraint(SpringLayout.NORTH, startTimeField, VIRTICALGAP, SpringLayout.NORTH, typeLabel);
 
 		layout.putConstraint(SpringLayout.WEST, timeFormat1, 150, SpringLayout.WEST, startTimeField);
@@ -398,7 +508,7 @@ public class LessonPanel extends JPanel {
 		layout.putConstraint(SpringLayout.WEST, endTimeLabel, 70, SpringLayout.WEST, this);
 		layout.putConstraint(SpringLayout.NORTH, endTimeLabel, VIRTICALGAP, SpringLayout.NORTH, startTimeLabel);
 
-		layout.putConstraint(SpringLayout.WEST, endTimeField, 100, SpringLayout.WEST, endTimeLabel);
+		layout.putConstraint(SpringLayout.WEST, endTimeField, HORIZONTAL_GAP, SpringLayout.EAST, lessonNumLabel);
 		layout.putConstraint(SpringLayout.NORTH, endTimeField, VIRTICALGAP, SpringLayout.NORTH, startTimeField);
 
 		layout.putConstraint(SpringLayout.WEST, timeFormat2, 150, SpringLayout.WEST, endTimeField);
@@ -407,7 +517,7 @@ public class LessonPanel extends JPanel {
 		layout.putConstraint(SpringLayout.WEST, lessonNumLabel, 70, SpringLayout.WEST, this);
 		layout.putConstraint(SpringLayout.NORTH, lessonNumLabel, VIRTICALGAP, SpringLayout.NORTH, endTimeLabel);
 		
-		layout.putConstraint(SpringLayout.WEST, lessonNumField, 100, SpringLayout.WEST, lessonNumLabel);
+		layout.putConstraint(SpringLayout.WEST, lessonNumField, HORIZONTAL_GAP, SpringLayout.EAST, lessonNumLabel);
 		layout.putConstraint(SpringLayout.NORTH, lessonNumField, VIRTICALGAP, SpringLayout.NORTH, endTimeLabel);
 
 		layout.putConstraint(SpringLayout.WEST, varientB, 100, SpringLayout.WEST, this);

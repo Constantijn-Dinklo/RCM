@@ -74,7 +74,7 @@ public class HorsePanel extends JPanel{
 				ArrayList<LessonType> types = new ArrayList<LessonType>();
 				try
 				{
-					maxTime = Integer.parseInt(maxHoursT.getText());
+					maxTime = Integer.parseInt(maxHoursT.getText().trim());
 					maxTime = maxTime * 3600; //This modifies the time to maximum time in milliseconds 
 				}
 				catch(Exception ex)
@@ -85,7 +85,7 @@ public class HorsePanel extends JPanel{
 				}
 				try
 				{
-					minTime = Integer.parseInt(minHoursT.getText());
+					minTime = Integer.parseInt(minHoursT.getText().trim());
 					minTime = minTime * 3600; //same as above
 				}
 				catch(Exception ex)
@@ -95,7 +95,7 @@ public class HorsePanel extends JPanel{
 				}
 				try
 				{
-					breakTime = Integer.parseInt(breakT.getText());
+					breakTime = Integer.parseInt(breakT.getText().trim());
 				}
 				catch(Exception ex)
 				{

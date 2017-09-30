@@ -20,8 +20,8 @@ public class PersonPanel extends JPanel {
 	
 	JLabel nameL, studentPrefL, teacherPrefL, notHorseL;
 	JTextField nameT;
-	List<JComboBox<Horse>> horsePrefs, teacherPrefs;
-	JComboBox<Horse> notHorseT;
+	List<CustomComboBox<Horse>> horsePrefs, teacherPrefs;
+	CustomComboBox<Horse> notHorseT;
 	JButton addUpdateB, cancelB;
 	
 	//Whether we are adding a person or updating a person (change into 2 subclasses)
@@ -47,17 +47,17 @@ public class PersonPanel extends JPanel {
 
 		nameT = new JTextField("Name");
 		
-		horsePrefs = new ArrayList<JComboBox<Horse> >();
+		horsePrefs = new ArrayList<CustomComboBox<Horse> >();
 		for (int i = 0; i < 3; i++)
 		{
-			horsePrefs.add(new JComboBox<Horse>());
+			horsePrefs.add(new CustomComboBox<Horse>());
 		}
-		teacherPrefs = new ArrayList<JComboBox<Horse> >();
+		teacherPrefs = new ArrayList<CustomComboBox<Horse> >();
 		for (int i = 0; i < 3; i++)
 		{
-			teacherPrefs.add(new JComboBox<Horse>());
+			teacherPrefs.add(new CustomComboBox<Horse>());
 		}
-		notHorseT = new JComboBox<Horse> ();
+		notHorseT = new CustomComboBox<Horse> ();
 
 		addUpdateB = new JButton(varient);
 		cancelB = new JButton("Cancel");
@@ -208,7 +208,7 @@ public class PersonPanel extends JPanel {
 		layout.putConstraint(SpringLayout.WEST, nameL, 100, SpringLayout.WEST, this);
 		layout.putConstraint(SpringLayout.NORTH, nameL, 150, SpringLayout.NORTH, this);
 
-		layout.putConstraint(SpringLayout.WEST, nameT, 200, SpringLayout.WEST, this);
+		layout.putConstraint(SpringLayout.WEST, nameT, 20, SpringLayout.EAST, notHorseL);
 		layout.putConstraint(SpringLayout.NORTH, nameT, 150, SpringLayout.NORTH, this);
 
 		layout.putConstraint(SpringLayout.WEST, studentPrefL, 100, SpringLayout.WEST, this);
@@ -216,7 +216,7 @@ public class PersonPanel extends JPanel {
 		
 		for(int i = 0; i < horsePrefs.size(); i++)
 		{
-			layout.putConstraint(SpringLayout.WEST, horsePrefs.get(i), 200, SpringLayout.WEST, this);
+			layout.putConstraint(SpringLayout.WEST, horsePrefs.get(i), 20, SpringLayout.EAST, notHorseL);
 			layout.putConstraint(SpringLayout.NORTH, horsePrefs.get(i), ((i + 1) * 30), SpringLayout.NORTH, nameT);
 		}
 		
@@ -225,14 +225,14 @@ public class PersonPanel extends JPanel {
 		
 		for (int i = 0; i < teacherPrefs.size(); i++)
 		{
-			layout.putConstraint(SpringLayout.WEST, teacherPrefs.get(i), 200, SpringLayout.WEST, this);
+			layout.putConstraint(SpringLayout.WEST, teacherPrefs.get(i), 20, SpringLayout.EAST, notHorseL);
 			layout.putConstraint(SpringLayout.NORTH, teacherPrefs.get(i), ((i + horsePrefs.size() + 1) * 30), SpringLayout.NORTH, nameT);
 		}
 
 		layout.putConstraint(SpringLayout.WEST, notHorseL, 100, SpringLayout.WEST, this);
 		layout.putConstraint(SpringLayout.NORTH, notHorseL, (30 * (horsePrefs.size() + teacherPrefs.size() + 1)), SpringLayout.NORTH, nameL);
 
-		layout.putConstraint(SpringLayout.WEST, notHorseT, 200, SpringLayout.WEST, this);
+		layout.putConstraint(SpringLayout.WEST, notHorseT, 20, SpringLayout.EAST, notHorseL);
 		layout.putConstraint(SpringLayout.NORTH, notHorseT, (30 * (horsePrefs.size() + teacherPrefs.size() + 1)), SpringLayout.NORTH, nameT);
 
 		layout.putConstraint(SpringLayout.WEST, addUpdateB, 100, SpringLayout.WEST, this);
