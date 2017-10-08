@@ -1,7 +1,8 @@
+import java.util.Calendar;
 
 public class CustomDate {
 	
-	private int year, month, day;
+	private int year, month, day, day_of_week;
 	
 	private final int PRIME = 17;
 	
@@ -10,6 +11,11 @@ public class CustomDate {
 		this.year = year;
 		this.month = month;
 		this.day = day;
+		
+		Calendar tmpCal = Calendar.getInstance();
+		tmpCal.set(year, month, day);
+		day_of_week = tmpCal.get(Calendar.DAY_OF_WEEK);
+		
 	}
 	
 	@Override
@@ -48,6 +54,10 @@ public class CustomDate {
 	public int getDay()
 	{
 		return day;
+	}
+	public int getDayOfWeek()
+	{
+		return day_of_week;
 	}
 
 	public String toString()

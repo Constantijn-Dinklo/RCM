@@ -77,7 +77,7 @@ public class Model implements ActionListener {
 		}
 		return null;
 	}
-	public ArrayList<Horse> getAvailableHorses(int time, Calendar date, LessonType type)
+	public ArrayList<Horse> getAvailableHorses(int time, CustomDate date, LessonType type)
 	{
 		ArrayList<Horse> horses = new ArrayList<Horse>();
 		Iterator<Horse> horseIterator = horseList.iterator();
@@ -155,8 +155,10 @@ public class Model implements ActionListener {
 		lessonList.add(lesson);
 		
 		//Adding lesson to the list organized by date, used for calendar display 
-		Calendar date = lesson.getStartDate();
-		CustomDate newDate = new CustomDate(date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH));
+		/*Calendar date = lesson.getStartDate();
+		CustomDate newDate = new CustomDate(date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH));*/
+		
+		CustomDate newDate = lesson.getLessonDate();
 		
 		if (!lessonListWithDate.containsKey(newDate))
 		{
@@ -169,15 +171,17 @@ public class Model implements ActionListener {
 	}
 	public void removeLesson(Lesson lesson){
 		int lessonDuration = lesson.getLessonTime();
-		Calendar lessonDate = lesson.getStartDate();
+		/*Calendar date = lesson.getStartDate();
+		CustomDate newDate = new CustomDate(date.get(Calendar.YEAR), date.get(Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH));*/
+		
+		CustomDate newDate = lesson.getLessonDate();
+		
 		ArrayList<Pair> pairs = lesson.getPairs();
 		for(int i = 0; i < pairs.size(); i++)
 		{
-			pairs.get(i).getHorse().updateTimeRidden(lessonDuration * -1, lessonDate);
+			pairs.get(i).getHorse().updateTimeRidden(lessonDuration * -1, newDate);
 		}
 		lessonList.remove(lesson);
-		
-		CustomDate newDate = new CustomDate(lessonDate.get(Calendar.YEAR), lessonDate.get(Calendar.MONTH), lessonDate.get(Calendar.DAY_OF_MONTH));
 		
 		//Make sure that this date actually exists in the data base.
 		if (lessonListWithDate.containsKey(newDate))
@@ -201,8 +205,8 @@ public class Model implements ActionListener {
 		while(lessonIterator.hasNext()){
 			Lesson curLesson = lessonIterator.next();
 			//System.out.println("Checking Lesson");
-			if (exactSameDate(startDate, curLesson.getStartDate()) && 
-				exactSameDate(endDate, curLesson.getEndDate()) &&
+			if (exactSameDate(startDate, curLesson.getStartTime()) && 
+				exactSameDate(endDate, curLesson.getEndTime()) &&
 				(lessonNum == curLesson.getLessonNum())){
 				return true;
 			}
@@ -352,19 +356,19 @@ public class Model implements ActionListener {
 			lessonInfo.put("Pairs", pairArray);
 			
 			JSONObject lessonStartDate = new JSONObject();
-			lessonStartDate.put("Year", writeLesson.getStartDate().get(Calendar.YEAR));
-			lessonStartDate.put("Month", writeLesson.getStartDate().get(Calendar.MONTH));
-			lessonStartDate.put("Day", writeLesson.getStartDate().get(Calendar.DAY_OF_MONTH));
-			lessonStartDate.put("Hour", writeLesson.getStartDate().get(Calendar.HOUR_OF_DAY));
-			lessonStartDate.put("Minute", writeLesson.getStartDate().get(Calendar.MINUTE));
+			lessonStartDate.put("Year", writeLesson.getLessonDate().getYear());
+			lessonStartDate.put("Month", writeLesson.getLessonDate().getMonth());
+			lessonStartDate.put("Day", writeLesson.getLessonDate().getDay());
+			lessonStartDate.put("Hour", writeLesson.getStartTime().get(Calendar.HOUR_OF_DAY));
+			lessonStartDate.put("Minute", writeLesson.getStartTime().get(Calendar.MINUTE));
 			lessonInfo.put("Start-Date", lessonStartDate);
 			
 			JSONObject lessonEndDate = new JSONObject();
-			lessonEndDate.put("Year", writeLesson.getEndDate().get(Calendar.YEAR));
-			lessonEndDate.put("Month", writeLesson.getEndDate().get(Calendar.MONTH));
-			lessonEndDate.put("Day", writeLesson.getEndDate().get(Calendar.DAY_OF_MONTH));
-			lessonEndDate.put("Hour", writeLesson.getEndDate().get(Calendar.HOUR_OF_DAY));
-			lessonEndDate.put("Minute", writeLesson.getEndDate().get(Calendar.MINUTE));
+			lessonEndDate.put("Year", writeLesson.getEndTime().get(Calendar.YEAR));
+			lessonEndDate.put("Month", writeLesson.getEndTime().get(Calendar.MONTH));
+			lessonEndDate.put("Day", writeLesson.getEndTime().get(Calendar.DAY_OF_MONTH));
+			lessonEndDate.put("Hour", writeLesson.getEndTime().get(Calendar.HOUR_OF_DAY));
+			lessonEndDate.put("Minute", writeLesson.getEndTime().get(Calendar.MINUTE));
 			lessonInfo.put("End-Date", lessonEndDate);
 			
 			lessonInfo.put("Lesson-Num", writeLesson.getLessonNum());
@@ -571,8 +575,10 @@ public class Model implements ActionListener {
 		{
 			frame.currentPanel.setVisible(false);
 			frame.remove(frame.currentPanel);
-			LessonPanel lp = new LessonPanel(this, null, "Add");
-			lp.setVisible(true);
+			//LessonPanel lp = new LessonPanel(this, null, "Add");
+			AddLessonPanel alp = new AddLessonPanel(this);
+			alp.setVisible(true);
+			//lp.setVisible(true);
 		}
 		else if (e.getActionCommand().equals("Update Lesson"))
 		{

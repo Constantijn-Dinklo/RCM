@@ -48,6 +48,8 @@ public class SelectLessonPanel extends JPanel {
 		datePanel = new JDatePanelImpl(curModel);
 		datePicker = new JDatePickerImpl(datePanel);
 		
+		Calendar tmpCal = Calendar.getInstance();
+		
 		lessonL = new JLabel("Lesson: ");
 		lessonComboBox = new JComboBox<Lesson>();
 		
@@ -56,6 +58,9 @@ public class SelectLessonPanel extends JPanel {
 		
 		addListeners();
 		buildUI();
+		
+		datePicker.getModel().setDate(tmpCal.get(Calendar.YEAR), tmpCal.get(Calendar.MONTH), tmpCal.get(Calendar.DAY_OF_MONTH));
+		datePicker.getModel().setSelected(true);
 		
 		frame.getContentPane().add(this, BorderLayout.CENTER);
 		frame.currentPanel = this;
@@ -72,28 +77,21 @@ public class SelectLessonPanel extends JPanel {
 					if (evt.getNewValue() != null)
 					{
 						Calendar datePicked = (Calendar) evt.getNewValue();
+						CustomDate tmpDate = new CustomDate(datePicked.get(Calendar.YEAR), datePicked.get(Calendar.MONTH), datePicked.get(Calendar.DAY_OF_MONTH));
 					
-						Iterator<Lesson> lessonIterator = model.getLessonList().iterator();
-						List<Lesson> lessonsOnDate = new ArrayList<Lesson>();
-						while(lessonIterator.hasNext())
+						lessonComboBox.removeAllItems();
+						
+						ArrayList<Lesson> lessonsOnDatePicked = model.getLessonListWithDates().get(tmpDate);
+						if (lessonsOnDatePicked != null)
 						{
-							Lesson curLesson = lessonIterator.next();
-							Calendar lessonDate = curLesson.getStartDate();
-							
-							if (model.sameDate(datePicked, lessonDate))
+							Iterator<Lesson> it = lessonsOnDatePicked.iterator();
+							while(it.hasNext())
 							{
-								lessonsOnDate.add(curLesson);
+								lessonComboBox.addItem(it.next());
 							}
 						}
-
-						lessonComboBox.removeAllItems();
-						lessonIterator = lessonsOnDate.iterator();
-						while(lessonIterator.hasNext())
-						{
-							Lesson curLesson = lessonIterator.next();
-							lessonComboBox.addItem(curLesson);
-						}
 						lessonComboBox.updateUI();
+
 					}
 				}
 			}
@@ -113,7 +111,9 @@ public class SelectLessonPanel extends JPanel {
 					if (varient.equals("Update"))
 					{
 						model.frame.currentPanel.setVisible(false);
-						LessonPanel lp = new LessonPanel(model, (Lesson)l , "Update");
+						//LessonPanel lp = new LessonPanel(model, (Lesson)l , "Update");
+						UpdateLessonPanel ulp = new UpdateLessonPanel(model, (Lesson)l, "Update");
+						ulp.setVisible(true);
 					}
 					else
 					{

@@ -88,15 +88,18 @@ public class DisplaySchedulePanel extends JPanel {
 					while(lessonIterator.hasNext())
 					{
 						Lesson curLesson = lessonIterator.next();
-						Calendar lessonDate = curLesson.getStartDate();
-						int lessonYear = lessonDate.get(Calendar.YEAR);
-						int lessonMonth = lessonDate.get(Calendar.MONTH);
-						int lessonDay = lessonDate.get(Calendar.DAY_OF_WEEK);
-						int lessonWeek = lessonDate.get(Calendar.WEEK_OF_MONTH);
+						CustomDate lessonDate = curLesson.getLessonDate();
+						int lessonYear = lessonDate.getYear();
+						int lessonMonth = lessonDate.getMonth();
+						int lessonDay = lessonDate.getDay();
+						
+						//Temporary fix for now
+						Calendar startDate = curLesson.getStartTime();
+						int lessonWeek = startDate.get(Calendar.WEEK_OF_MONTH);
 						
 						if ((lessonYear == selectedYear) && (lessonMonth == selectedMonth) && (lessonDay == selectedDay))
 						{	
-							int timeOfLesson = model.toTimeOfDayInSeconds(curLesson.getStartDate().get(Calendar.HOUR_OF_DAY), curLesson.getStartDate().get(Calendar.MINUTE));
+							int timeOfLesson = model.toTimeOfDayInSeconds(curLesson.getStartTime().get(Calendar.HOUR_OF_DAY), curLesson.getStartTime().get(Calendar.MINUTE));
 							if (!displayLessons.containsKey(timeOfLesson))
 							{
 								displayLessons.put(timeOfLesson, new TreeMap<Integer, TreeMap<Integer, Lesson>>());
@@ -147,9 +150,9 @@ public class DisplaySchedulePanel extends JPanel {
 								}
 								if (dateCounter < 1)
 								{
-									topRow.getCell(dateColumn.indexOf(lessonWeek) + 1).setText("Date: " + curLesson.getStartDate().get(Calendar.YEAR) + "/" 
-														   			+ (curLesson.getStartDate().get(Calendar.MONTH) + 1) + "/"
-														   			+ curLesson.getStartDate().get(Calendar.DAY_OF_MONTH) );
+									topRow.getCell(dateColumn.indexOf(lessonWeek) + 1).setText("Date: " + curLesson.getLessonDate().getYear() + "/" 
+														   			+ (curLesson.getLessonDate().getMonth() + 1) + "/"
+														   			+ curLesson.getLessonDate().getDay());
 									dateCounter++;
 								}
 								ArrayList<Pair> pairs = curLesson.getPairs();
@@ -173,10 +176,10 @@ public class DisplaySchedulePanel extends JPanel {
 								nameCounter++;
 								//displayLessons.get(lessonTime).get(lessonNum).get(lessonWeek).display();
 							}
-							headerRow.getCell(0).setText(curLesson.getStartDate().get(Calendar.HOUR_OF_DAY) + ":" + 
-												   curLesson.getStartDate().get(Calendar.MINUTE)+ " - " + 
-												   curLesson.getEndDate().get(Calendar.HOUR_OF_DAY) + ":" + 
-												   curLesson.getEndDate().get(Calendar.MINUTE));
+							headerRow.getCell(0).setText(curLesson.getStartTime().get(Calendar.HOUR_OF_DAY) + ":" + 
+												   curLesson.getStartTime().get(Calendar.MINUTE)+ " - " + 
+												   curLesson.getEndTime().get(Calendar.HOUR_OF_DAY) + ":" + 
+												   curLesson.getEndTime().get(Calendar.MINUTE));
 						}
 					}
 					document.write(outStream);

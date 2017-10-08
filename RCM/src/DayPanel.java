@@ -70,11 +70,11 @@ public class DayPanel extends JPanel {
 		{
 			Lesson curLesson = lessons.get(i);
 			int lessonNum = curLesson.getLessonNum();
-			int startHour = curLesson.getStartDate().get(Calendar.HOUR_OF_DAY);
-			int startMin = curLesson.getStartDate().get(Calendar.MINUTE);
+			int startHour = curLesson.getStartTime().get(Calendar.HOUR_OF_DAY);
+			int startMin = curLesson.getStartTime().get(Calendar.MINUTE);
 			String startTime = "" + startHour + ":" + startMin;
-			int endHour = curLesson.getEndDate().get(Calendar.HOUR_OF_DAY);
-			int endMin = curLesson.getEndDate().get(Calendar.MINUTE);
+			int endHour = curLesson.getEndTime().get(Calendar.HOUR_OF_DAY);
+			int endMin = curLesson.getEndTime().get(Calendar.MINUTE);
 			String endTime = "" + endHour + ":" + endMin;
 			
 			String buttonText = (lessonNum + ":  " + startTime + "  -  " + endTime);
@@ -99,7 +99,7 @@ public class DayPanel extends JPanel {
 					calModel.model.frame.remove(calModel.model.frame.currentPanel);
 					calModel.model.frame.setSize(new Dimension(500, 800));
 					calModel.model.frame.setLocationRelativeTo(null);
-					LessonPanel lp = new LessonPanel(calModel.model, clickedLesson, "Calendar");
+					UpdateLessonPanel lp = new UpdateLessonPanel(calModel.model, clickedLesson, "Calendar");
 					lp.setVisible(true);
 				}
 		

@@ -18,7 +18,9 @@ public class Horse
   
   //stores the amount of time a horse has been ridden on a certain day.
   //First index is the year, second is an array of months and days for that year. (Which to CustomDate)
-  Map<Integer, Integer[][]> timeRidden = new HashMap<>();
+  //Map<Integer, Integer[][]> timeRidden = new HashMap<>();
+  Map<CustomDate, Integer> timeRidden = new HashMap<>();
+  //ArrayList<CustomDate> timeRidden = new ArrayList<CustomDate>();
   //A List of people that have this horse as their preference.
   transient List<Person> people = new ArrayList<Person>();
   
@@ -39,60 +41,42 @@ public class Horse
   }
   
   //Increases the time a horse has been ridden on a day
-  public void updateTimeRidden(int time, Calendar date)
+  public void updateTimeRidden(int time, CustomDate date)
   {
 	  System.out.println("Updating");
 	  System.out.println(getName());
-	  int year = date.get(Calendar.YEAR);
-	  int month = date.get(Calendar.MONTH);
-	  int day = date.get(Calendar.DAY_OF_MONTH);
-	  if (timeRidden.containsKey(year))
+	  int year = date.getYear();
+	  int month = date.getMonth();
+	  int day = date.getDay();
+	  
+	  int totalTime = time;
+	  
+	  if (timeRidden.containsKey(date))
 	  {
-		  if (timeRidden.get(year)[month][day - 1] != null)
-		  {
-			  int totalTime = timeRidden.get(year)[month][day - 1] + time;
-			  timeRidden.get(year)[month][day - 1] = totalTime;
-		  }
-		  else
-		  {
-			  timeRidden.get(year)[month][day - 1] = time;
-		  }
+		  totalTime += timeRidden.get(date);
 	  }
-	  else
-	  {
-		  timeRidden.put(year, new Integer[monthsInYears][maxDaysInMonth]);
-		  timeRidden.get(year)[month][day - 1] = time;
-	  }
+	  
+	  timeRidden.put(date, totalTime);
   }
   
   //Determines if a horse has the potential to be ridden in a lesson.
   //Returns true if the horse can still be ridden for the added amount of time
   //Return false if the added time would exceed the horses maximum allowed time to be ridden.
-  public Boolean canBeRidden (int time, Calendar date)
+  public Boolean canBeRidden (int time, CustomDate date)
   {
-	  int year = date.get(Calendar.YEAR);
-	  int month = date.get(Calendar.MONTH);
-	  int day = date.get(Calendar.DAY_OF_MONTH);
-	  if (timeRidden.containsKey(year))
+	  
+	  int totalTime = time;
+	  
+	  if (timeRidden.containsKey(date))
 	  {
-		  int totalTime;
-		  if (timeRidden.get(year)[month][day - 1] != null)
-		  {
-			  totalTime = timeRidden.get(year)[month][day - 1] + time;
-		  }
-		  else
-		  {
-			  totalTime = time;
-		  }
-		  if (totalTime > maxTime)
-		  {
-			  return false;
-		  }
+		  totalTime += timeRidden.get(date);
 	  }
-	  else
+	  
+	  if (totalTime > maxTime)
 	  {
-		  timeRidden.put(year, new Integer[12][31]);
+		  return false;
 	  }
+	  
 	  return true;
   }
   

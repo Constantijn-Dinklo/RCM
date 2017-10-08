@@ -8,7 +8,8 @@ import javax.swing.JOptionPane;
 
 public class Lesson
 {
-	private Calendar startDate, endDate;
+	private Calendar startTime, endTime;
+	private CustomDate lessonDate;
 	private int lessonTime, lessonNum;
 	private ArrayList<Pair> pairs = new ArrayList<Pair>();
 	private boolean paired;
@@ -21,20 +22,23 @@ public class Lesson
 
 	public Lesson(){}
 	
-	public Lesson (ArrayList<Person> students, ArrayList<Horse> horses, Calendar startDate, Calendar endDate, int lessonTime, int lessonNum, LessonType type)
+	public Lesson (ArrayList<Person> students, ArrayList<Horse> horses, Calendar startTime, Calendar endTime, int lessonTime, int lessonNum, LessonType type)
 	{
 		Iterator<Person> studentIterator = students.iterator();
 		while(studentIterator.hasNext())
 		{
 			this.students.add(studentIterator.next());
 		}
+		
+		System.out.println(horses);
 		Iterator<Horse> horseIterator = horses.iterator();
 		while(horseIterator.hasNext())
 		{
 			this.availableHorses.add(horseIterator.next());
 		}
-		this.startDate = startDate;
-		this.endDate = endDate;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.lessonDate = new CustomDate(startTime.get(Calendar.YEAR), startTime.get(Calendar.MONTH), startTime.get(Calendar.DAY_OF_MONTH));
 		this.lessonTime = lessonTime;
 		this.lessonNum = lessonNum;
 		this.paired = false;
@@ -44,18 +48,20 @@ public class Lesson
 	//Creates a new lesson with the pairs already initialized.
 	//It modifies all fields as if originally creating a lesson and creating pairs, eg, it modifies horse ridden time.
 	//This should only be used on the initial setup of the program.
-	public Lesson (ArrayList<Pair> pairs, Calendar startDate, Calendar endDate, int lessonTime, int lessonNum, LessonType type)
+	public Lesson (ArrayList<Pair> pairs, Calendar startTime, Calendar endTime, int lessonTime, int lessonNum, LessonType type)
 	{
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.lessonDate = new CustomDate(startTime.get(Calendar.YEAR), startTime.get(Calendar.MONTH), startTime.get(Calendar.DAY_OF_MONTH));
+
 		Iterator<Pair> pairsIterator = pairs.iterator();
 		while(pairsIterator.hasNext())
 		{
 			Pair tempPair = pairsIterator.next();
 			Horse tempHorse = tempPair.getHorse();
-			tempHorse.updateTimeRidden(lessonTime, startDate);
+			tempHorse.updateTimeRidden(lessonTime, lessonDate);
 			this.pairs.add(tempPair);
 		}
-		this.startDate = startDate;
-		this.endDate = endDate;
 		this.lessonTime = lessonTime;
 		this.lessonNum = lessonNum;
 		this.paired = true;
@@ -77,7 +83,7 @@ public class Lesson
 	private void updateData(Person p, Horse h)
 	{
 		updateList(p);
-		h.updateTimeRidden(lessonTime, startDate);
+		h.updateTimeRidden(lessonTime, lessonDate);
 		students.remove(p);
 		availableHorses.remove(h);
 	}
@@ -192,19 +198,30 @@ public class Lesson
 		paired = true;
 	}
 	
+	//Setters
+	public void setPairs(ArrayList<Pair> pairs)
+	{
+		this.pairs.clear();
+		this.pairs = pairs;
+	}
+	
 	//Getters
 	public ArrayList<Pair> getPairs ()
 	{
 		return pairs;
 	}
-	public Calendar getStartDate ()
+	public Calendar getStartTime ()
 	{
-		return startDate;
-	}	
-	public Calendar getEndDate ()
+		return startTime;
+	}
+	public Calendar getEndTime ()
 	{
-		return endDate;
-	}	
+		return endTime;
+	}
+	public CustomDate getLessonDate()
+	{
+		return lessonDate;
+	}
 	public int getLessonNum()
 	{
 		return lessonNum;
@@ -227,24 +244,25 @@ public class Lesson
 	public String toString()
 	{
 		String str = "" + lessonNum + ": ";
-		str += startDate.get(Calendar.HOUR_OF_DAY) + ":" + startDate.get(Calendar.MINUTE);
+		str += startTime.get(Calendar.HOUR_OF_DAY) + ":" + startTime.get(Calendar.MINUTE);
 		str += "-";
-		str += endDate.get(Calendar.HOUR_OF_DAY) + ":" + endDate.get(Calendar.MINUTE);
+		str += endTime.get(Calendar.HOUR_OF_DAY) + ":" + endTime.get(Calendar.MINUTE);
 		return str;
 	}	
 	public void display()
 	{
 		System.out.println("Start Time: ");
-		System.out.println("\t" + "Year: " + startDate.get(Calendar.YEAR));
-		System.out.println("\t" + "Month: " + startDate.get(Calendar.MONTH));
-		System.out.println("\t" + "Day: " + startDate.get(Calendar.DAY_OF_MONTH));
-		System.out.println("\t" + "Time: " + startDate.get(Calendar.HOUR_OF_DAY) + ":" + startDate.get(Calendar.MINUTE));
+		System.out.println("\t" + "Year: " + lessonDate.getYear());
+		System.out.println("\t" + "Month: " + lessonDate.getMonth());
+		System.out.println("\t" + "Day: " + lessonDate.getDay());
+		System.out.println("\t" + "Time: " + startTime.get(Calendar.HOUR_OF_DAY) + ":" + startTime.get(Calendar.MINUTE));
 		System.out.println("End Time: ");
-		System.out.println("\t" + "Year: " + endDate.get(Calendar.YEAR));
-		System.out.println("\t" + "Month: " + endDate.get(Calendar.MONTH));
-		System.out.println("\t" + "Day: " + endDate.get(Calendar.DAY_OF_MONTH));
-		System.out.println("\t" + "Time: " + endDate.get(Calendar.HOUR_OF_DAY) + ":" + endDate.get(Calendar.MINUTE));
+		System.out.println("\t" + "Year: " + endTime.get(Calendar.YEAR));
+		System.out.println("\t" + "Month: " + endTime.get(Calendar.MONTH));
+		System.out.println("\t" + "Day: " + endTime.get(Calendar.DAY_OF_MONTH));
+		System.out.println("\t" + "Time: " + endTime.get(Calendar.HOUR_OF_DAY) + ":" + endTime.get(Calendar.MINUTE));
 		System.out.println("Pairs:");
+		System.out.println(pairs.size());
 		for (int i = 0; i < pairs.size(); i++)
 		{
 			System.out.println(pairs.get(i).toString());
