@@ -185,7 +185,7 @@ public class DisplaySchedulePanel extends JPanel {
 					document.write(outStream);
 					outStream.close();
 					document.close();
-					model.toMainMenu();
+					//model.toMainMenu();
 				}
 				catch(Exception excep)
 				{

@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -19,7 +20,7 @@ import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
 import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
-public class SelectLessonPanel extends JPanel {
+public class SelectLessonPanel extends PopupPanel {
 	
 	Model model;
 	SpringLayout layout;
@@ -32,6 +33,7 @@ public class SelectLessonPanel extends JPanel {
 	
 	String varient;
 	public SelectLessonPanel (Model model, String varient){
+		super("Select Lesson");
 		
 		this.model = model;
 		this.varient = varient;
@@ -62,8 +64,7 @@ public class SelectLessonPanel extends JPanel {
 		datePicker.getModel().setDate(tmpCal.get(Calendar.YEAR), tmpCal.get(Calendar.MONTH), tmpCal.get(Calendar.DAY_OF_MONTH));
 		datePicker.getModel().setSelected(true);
 		
-		frame.getContentPane().add(this, BorderLayout.CENTER);
-		frame.currentPanel = this;
+		this.setPreferredSize(new Dimension(500, 800));
 	}
 	
 	private void addListeners(){
@@ -109,22 +110,25 @@ public class SelectLessonPanel extends JPanel {
 				else
 				{
 					if (varient.equals("Update"))
-					{
-						model.frame.currentPanel.setVisible(false);
-						//LessonPanel lp = new LessonPanel(model, (Lesson)l , "Update");
-						UpdateLessonPanel ulp = new UpdateLessonPanel(model, (Lesson)l, "Update");
-						ulp.setVisible(true);
+					{	
+						getFrame().close();
+						new PopupFrame(new UpdateLessonPanel(model, (Lesson)l, "Update")).display();	
 					}
 					else
 					{
 						model.removeLesson((Lesson) l);
-						model.toMainMenu();
+						getFrame().close();
 					}
 				}
 			}
 		});
 		
-		cancelB.addActionListener(model);
+		cancelB.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e) {
+				getFrame().close();
+			}
+		});
 	}
 	
 	private void buildUI(){

@@ -20,7 +20,7 @@ import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
 import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
 import net.sourceforge.jdatepicker.impl.UtilCalendarModel;
 
-public class LessonPanel extends JPanel {
+public class LessonPanel extends PopupPanel {
 	
 	final int NUMPEOPLE = 10;
 	
@@ -55,7 +55,8 @@ public class LessonPanel extends JPanel {
 	
 		
 	public LessonPanel (Model model, Lesson lesson, String varient){
-
+		super(varient);
+		
 		thisPanel = new JLayeredPane();
 		this.model = model;
 		this.curLesson = lesson;
@@ -151,7 +152,13 @@ public class LessonPanel extends JPanel {
 	
 	private void addActionListeners()
 	{
-		cancelB.addActionListener(model);
+		cancelB.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				getFrame().close();
+			}
+		});
 
 	}
 }

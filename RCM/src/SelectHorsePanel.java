@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -10,7 +11,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 
-public class SelectHorsePanel extends JPanel {
+public class SelectHorsePanel extends PopupPanel {
+	
+	int UPDATE = 1;
+	int REMOVE = 2;
 	
 	Model model;
 	SpringLayout layout;
@@ -24,6 +28,7 @@ public class SelectHorsePanel extends JPanel {
 	String varient;
 	
 	public SelectHorsePanel (Model model, String varient){
+		super("Select Horse");
 		
 		this.model = model;
 		MainFrame frame = model.frame;
@@ -48,39 +53,42 @@ public class SelectHorsePanel extends JPanel {
 		
 		addActionListener();
 		buildUI();
-				
-		frame.getContentPane().add(this, BorderLayout.CENTER);
 		
-		frame.currentPanel = this;
+		this.setPreferredSize(new Dimension(500, 800));
 	}
 	
 	public void addActionListener(){
 		varientB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				Object p = horseComboBox.getSelectedItem();
+				Object h = horseComboBox.getSelectedItem();
 				//create error if no horse is selected
-				if (p == null){
+				if (h == null){
 					JOptionPane.showMessageDialog(null, "Need to select a Horse", "Error", JOptionPane.ERROR_MESSAGE);
 				}
 				else
 				{
 					if (varient.equals("Update"))
 					{
-						//model.horseUpdateScreen((Horse)p);
-						model.frame.currentPanel.setVisible(false);
-						HorsePanel hp = new HorsePanel(model, (Horse)p, "Update");
+						getFrame().close();
+						new PopupFrame(new HorsePanel(model, (Horse)h, "Update")).display();
+						
 					}
 					else
 					{
-						model.removeHorse((Horse)p);
-						model.toMainMenu();
+						model.removeHorse((Horse)h);
+						getFrame().close();
 					}
 				}
 			}
 		});
 		
-		cancelB.addActionListener(model);
+		cancelB.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e) {
+				getFrame().close();
+			}
+		});
 	}
 	
 	public void buildUI(){

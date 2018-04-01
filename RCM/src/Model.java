@@ -20,9 +20,13 @@ public class Model implements ActionListener {
 	
 	//Add name to person/horse mappings
 	private ArrayList<Person> personList = new ArrayList<Person>();
-	private ArrayList<Horse> horseList = new ArrayList<Horse>();
-	private ArrayList<Lesson> lessonList = new ArrayList<Lesson>();
+	private Map<String, Person> personListByName = new HashMap<String, Person>();
 	
+	private ArrayList<Horse> horseList = new ArrayList<Horse>();
+	private Map<String, Horse> horseListByName = new HashMap<String, Horse>();
+	
+	
+	private ArrayList<Lesson> lessonList = new ArrayList<Lesson>();
 	//Organize lessons by their specific date (year, month and day) but not time of day.
 	private Map<CustomDate , ArrayList<Lesson>> lessonListWithDate = new HashMap<CustomDate, ArrayList<Lesson>>();
 	
@@ -32,8 +36,7 @@ public class Model implements ActionListener {
 	public Model () {
 		frame = new MainFrame();
 		setup();
-		MainMenuPanel main = new MainMenuPanel(this);
-		main.setVisible(true);
+		CalendarModel calModel = new CalendarModel(this);
 		frame.display();
 	}
 	
@@ -42,16 +45,17 @@ public class Model implements ActionListener {
 		fromJSON();
 	}
 	
-	public void toMainMenu() {
+	/*public void toMainMenu() {
 		frame.currentPanel.setVisible(false);
 		frame.remove(frame.currentPanel);
 		frame.setSize(new Dimension(500, 800));
 		MainMenuPanel main = new MainMenuPanel(this);
 		main.setVisible(true);
-	}
+	}*/
 	
 	public void addHorse(Horse horse){
 		horseList.add(horse);
+		horseListByName.put(horse.getName(), horse);
 	}
 	public void updateHorse(Horse horse, int maxHours, int minHourse){
 		horse.setMaxTime(maxHours);
@@ -59,21 +63,21 @@ public class Model implements ActionListener {
 	}
 	public void removeHorse(Horse horse){
 		horseList.get(horseList.indexOf(horse)).removeFromPeoplePref(); //This removes the horse from peoples' preference list
+		horseListByName.remove(horse.getName());
 		horseList.remove(horse);
 	}
 	public ArrayList<Horse> getHorseList(){
 		return horseList;
 	}
+	public Map<String, Horse> getHorseListByName()
+	{
+		return horseListByName;
+	}
 	public Horse getHorse(String name)
 	{
-		Iterator<Horse> horseIterator = horseList.iterator();
-		while(horseIterator.hasNext())
+		if (horseListByName.containsKey(name))
 		{
-			Horse tempHorse = horseIterator.next();
-			if (tempHorse.getName().equals(name))
-			{
-				return tempHorse;
-			}
+			return horseListByName.get(name);
 		}
 		return null;
 	}
@@ -94,9 +98,11 @@ public class Model implements ActionListener {
 	
 	public void addPerson(Person person){
 		personList.add(person);
+		personListByName.put(person.name, person);
 	}
 	public void addPerson(Person person,  ArrayList<Horse> studentPref, ArrayList<Horse> teacherPref){
 		personList.add(person);
+		personListByName.put(person.name, person);
 		addPersonToHorseList(person, studentPref, teacherPref);
 	}
 	public void updatePerson(Person person, ArrayList<Horse> studentPref, ArrayList<Horse> teacherPref, Horse notHorse){
@@ -125,17 +131,16 @@ public class Model implements ActionListener {
 	}	
 	public ArrayList<Person> getPersonList(){
 		return personList;
-	}	
+	}
+	public Map<String, Person> getPersonListByName()
+	{
+		return personListByName;
+	}
 	public Person getPerson(String name)
 	{
-		Iterator<Person> personIterator = personList.iterator();
-		while(personIterator.hasNext())
+		if (personListByName.containsKey(name))
 		{
-			Person tempPerson = personIterator.next();
-			if (tempPerson.getName().equals(name))
-			{
-				return tempPerson;
-			}
+			return personListByName.get(name);
 		}
 		return null;
 	}
@@ -612,10 +617,10 @@ public class Model implements ActionListener {
 			/*CalendarPanel slp = new CalendarPanel(calModel);
 			slp.setVisible(true);*/
 		}
-		else if(e.getActionCommand().equals("Cancel"))
+		/*else if(e.getActionCommand().equals("Cancel"))
 		{
 			toMainMenu();
-		}
+		}*/
 		else if (e.getActionCommand().equals("Save"))
 		{
 			toJSON();

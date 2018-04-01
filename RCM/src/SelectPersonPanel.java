@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 
-public class SelectPersonPanel extends JPanel {
+public class SelectPersonPanel extends PopupPanel {
 	
 	Model model;
 	SpringLayout layout;
@@ -22,6 +23,7 @@ public class SelectPersonPanel extends JPanel {
 	String varient;
 	
 	public SelectPersonPanel(Model model, String varient){
+		super("Select Person");
 		
 		this.model = model;
 		MainFrame frame = model.frame;
@@ -40,12 +42,11 @@ public class SelectPersonPanel extends JPanel {
 		addActionListener();
 		buildUI();
 		
-		frame.getContentPane().add(this, BorderLayout.CENTER);
-		
-		frame.currentPanel = this;
+		this.setPreferredSize(new Dimension(500, 800));
 	}
 	
 	private void addActionListener(){
+		SelectPersonPanel that = this;
 		varientB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -57,19 +58,25 @@ public class SelectPersonPanel extends JPanel {
 				{
 					if (varient.equals("Update"))
 					{
-						model.frame.currentPanel.setVisible(false);
-						PersonPanel pp = new PersonPanel(model, (Person)p, "Update");
+						getFrame().close();
+						new PopupFrame(new PersonPanel(model, (Person)p, "Update")).display();
+						
 					}
 					else
 					{
 						model.removePerson((Person)p);
-						model.toMainMenu();
+						getFrame().close();
 					}
 				}
 			}
 		});
 		
-		cancelB.addActionListener(model);
+		cancelB.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e) {
+				getFrame().close();
+			}
+		});
 	}
 	
 	private void addComboBoxValues(){

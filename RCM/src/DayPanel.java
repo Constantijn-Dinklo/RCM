@@ -51,7 +51,6 @@ public class DayPanel extends JPanel {
 	@Override
 	public void setBounds(int x, int y, int width, int height)
 	{
-		
 		super.setBounds(x,y,width,height);
 		lessonArea.setPreferredSize(new Dimension(this.getBounds().width - 16, this.getBounds().height - 20));
 	}

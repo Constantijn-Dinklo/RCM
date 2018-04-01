@@ -68,14 +68,10 @@ public class UpdateLessonPanel extends LessonPanel {
 		typeField.setPreferredSize(new Dimension(200, 30));
 		typeField.setEditable(false);
 				
-		buildUI();
 		addActionListener();
+		buildUI();
 		
-		frame.setSize(new Dimension(700,800));
-		
-		frame.getContentPane().add(this, BorderLayout.CENTER);
-		
-		frame.currentPanel = this;
+		this.setPreferredSize(new Dimension(700, 800));
 	}
 	
 	private void buildUI(){
@@ -226,8 +222,7 @@ public class UpdateLessonPanel extends LessonPanel {
 				
 				curLesson.setPairs(lessonPairs);
 				
-				model.toMainMenu();
-				
+				getFrame().close();
 			}
 		});
 	}

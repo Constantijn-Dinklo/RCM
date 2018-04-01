@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
-public class PersonPanel extends JPanel {
+public class PersonPanel extends PopupPanel {
 	
 	Model model;
 	SpringLayout layout;
@@ -30,6 +30,7 @@ public class PersonPanel extends JPanel {
 	Person curPerson;
 	
 	public PersonPanel(Model model, Person person, String varient){
+		super("Add Person");
 		
 		this.model = model;
 		MainFrame frame = model.frame;
@@ -71,19 +72,18 @@ public class PersonPanel extends JPanel {
 		
 		buildUI();
 
-		frame.getContentPane().add(this, BorderLayout.CENTER);
-		
-		frame.currentPanel = this;
+		this.setPreferredSize(new Dimension(500, 800));
 	}
 	
 	private void addActionListener(){
+		
 		//Action listener for add button
 		//Performs the logic of adding a new horse.
 		//Has separate actionListener because it needs local variables.
 		addUpdateB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String name = nameT.getText().trim();
-				if (model.getPerson(name) != null && !varient.equals("Update"))
+				if (model.getPersonListByName().containsKey(name) && !varient.equals("Update"))
 				{
 					System.out.println("Person with this name already exists");
 					JOptionPane.showMessageDialog(null, "Person with this name already exists", "Error", JOptionPane.ERROR_MESSAGE);
@@ -132,10 +132,17 @@ public class PersonPanel extends JPanel {
 				{
 					model.updatePerson(curPerson, horsePref, teacherPref, notHorse);
 				}
-				model.toMainMenu();
+				getFrame().close();
 			}
 		});
-		cancelB.addActionListener(model);
+
+		cancelB.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				getFrame().close();
+			}
+		});
 	}
 	
 	//Sets the values you can choose from the combobox, also adds the comboboxes to the screen.

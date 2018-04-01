@@ -20,15 +20,10 @@ public class AddLessonPanel extends LessonPanel {
 		
 		weeklyCB = new JCheckBox("Repeat this lesson weekly");
 				
-		buildUI();
 		addActionListener();
+		buildUI();
 		
-		frame.setSize(new Dimension(700,800));
-		
-		frame.getContentPane().add(this, BorderLayout.CENTER);
-		
-		frame.currentPanel = this;
-		
+		this.setPreferredSize(new Dimension(700, 800));
 	}
 	
 	private void addActionListener(){
@@ -198,7 +193,7 @@ public class AddLessonPanel extends LessonPanel {
 					model.addLesson(newLessons.get(i));
 				}
 				
-				model.toMainMenu();
+				getFrame().close();
 			}
 		});
 		

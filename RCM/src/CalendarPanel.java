@@ -12,9 +12,13 @@ import java.util.TimeZone;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -29,8 +33,16 @@ public class CalendarPanel extends JPanel {
 	Model model;
 	CalendarModel calModel;
 	
+	JMenuBar menuBar;
+	JMenu fileMenu, horseMenu, personMenu, lessonMenu;
+	JMenuItem newI, saveI, exitI;
+	JMenuItem addHorseI, updateHorseI, removeHorseI;
+	JMenuItem addPersonI, updatePersonI, removePersonI;
+	JMenuItem addLessonI, updateLessonI, removeLessonI;
+	
+	
 	static JLabel monthL, yearL;
-	static JButton nextB, prevB, backB;
+	static JButton nextB, prevB;
 	static JComboBox<String> yearC;
 	static JTable calendarT;
 	static DefaultTableModel calendarTM;
@@ -49,11 +61,57 @@ public class CalendarPanel extends JPanel {
 				
 		this.setLayout(null);
 		
+		menuBar = new JMenuBar();
+		
+		fileMenu = new JMenu("File");
+		horseMenu = new JMenu("Horses");
+		personMenu = new JMenu("Persons");
+		lessonMenu = new JMenu("Lessons");
+		
+		newI = new JMenuItem("New");
+		saveI = new JMenuItem("Save");
+		exitI = new JMenuItem("Exit");
+		
+		fileMenu.add(newI);
+		fileMenu.add(saveI);
+		fileMenu.add(exitI);
+		
+		//addHorseI = new JMenuItem("Add Horse", new ImageIcon("Images/Add.png"));
+		addHorseI = new JMenuItem("Add Horse", new ImageIcon( getClass().getResource("Add.png")));
+		updateHorseI = new JMenuItem("Update Horse", new ImageIcon(getClass().getResource("Update.png")));
+		removeHorseI = new JMenuItem("Remove Horse", new ImageIcon(getClass().getResource("Remove.png")));
+		
+		horseMenu.add(addHorseI);
+		horseMenu.add(updateHorseI);
+		horseMenu.add(removeHorseI);
+		
+		addPersonI = new JMenuItem("Add Person", new ImageIcon(getClass().getResource("Add.png")));
+		updatePersonI = new JMenuItem("Update Person", new ImageIcon(getClass().getResource("Update.png")));
+		removePersonI = new JMenuItem("Remove Person", new ImageIcon(getClass().getResource("Remove.png")));
+		
+		personMenu.add(addPersonI);
+		personMenu.add(updatePersonI);
+		personMenu.add(removePersonI);
+		
+		addLessonI = new JMenuItem("Add Lesson", new ImageIcon(getClass().getResource("Add.png")));
+		updateLessonI = new JMenuItem("Update Lesson", new ImageIcon(getClass().getResource("Update.png")));
+		removeLessonI = new JMenuItem("Remove Lesson", new ImageIcon(getClass().getResource("Remove.png")));
+		
+		lessonMenu.add(addLessonI);
+		lessonMenu.add(updateLessonI);
+		lessonMenu.add(removeLessonI);
+		
+		
+		menuBar.add(fileMenu);
+		menuBar.add(horseMenu);
+		menuBar.add(personMenu);
+		menuBar.add(lessonMenu);
+		
+		
 		monthL = new JLabel("January");
 		yearL = new JLabel("Change Year:");
 		nextB = new JButton(">>");
 		prevB = new JButton("<<");
-		backB = new JButton("Back");
 		yearC = new JComboBox<String>();
 		
 		calendarTM = new DefaultTableModel();
@@ -71,6 +129,7 @@ public class CalendarPanel extends JPanel {
 		realYear = cal.get(GregorianCalendar.YEAR);
 		currentMonth = realMonth;
 		currentYear = realYear;
+		
 		
 		dayArea = new DayPanel(calModel, new CustomDate(realYear, realMonth, realDay));
 		dayArea.setBorder(BorderFactory.createTitledBorder("Day"));
@@ -101,19 +160,149 @@ public class CalendarPanel extends JPanel {
 		//yearC.setSelectedIndex(100);
 		refreshCalendar(realMonth, realYear);
 
-		addActionListener();
+		addActionListeners();
 		buildUI();
 		
-		frame.setSize(new Dimension(1300,800));
-		//frame.setLocationRelativeTo(null);
+		//frame.setSize(new Dimension(1300,800));
+		this.setPreferredSize(new Dimension(1300, 800));
+		
 		frame.getContentPane().add(this, BorderLayout.CENTER);
 		
 		frame.currentPanel = this;
 		
 	}
 	
-	private void addActionListener()
+	private void addActionListeners()
 	{
+		saveI.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("Pressed Save");
+				
+				model.toJSON();
+				
+			}
+		});
+		
+		exitI.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				model.frame.close();
+				System.exit(0);
+			}
+		});
+		
+		addHorseI.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent arg0) {	
+				System.out.println("Pressed Add Horse");
+				
+				HorsePanel hp = new HorsePanel(model, null, "Add");
+				
+				PopupFrame pf = new PopupFrame(hp);
+				pf.display();
+			}
+		});
+		
+		updateHorseI.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent arg0) {	
+				System.out.println("Pressed Update Horse");
+				
+				SelectHorsePanel shp = new SelectHorsePanel(model, "Update");
+				PopupFrame pf = new PopupFrame(shp);
+				pf.display();
+			}
+		});
+		
+		removeHorseI.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent arg0) {		
+				System.out.println("Pressed Remove Horse");
+				
+				SelectHorsePanel shp = new SelectHorsePanel(model, "Remove");
+				PopupFrame pf = new PopupFrame(shp);
+				pf.display();
+			}
+		});
+		
+		addPersonI.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent arg0) {	
+				System.out.println("Pressed Add Person");
+				
+				PersonPanel pp = new PersonPanel(model, null, "Add");
+				PopupFrame pf = new PopupFrame(pp);
+				pf.display();	
+			}
+		});
+		
+		updatePersonI.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent arg0) {	
+				System.out.println("Pressed Update Person");
+				
+				SelectPersonPanel spp = new SelectPersonPanel(model, "Update");
+				PopupFrame pf = new PopupFrame(spp);
+				pf.display();	
+			}
+		});
+		
+		removePersonI.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent arg0) {	
+				System.out.println("Pressed Update Person");
+				
+				SelectPersonPanel spp = new SelectPersonPanel(model, "Remove");
+				PopupFrame pf = new PopupFrame(spp);
+				pf.display();	
+			}
+		});
+		
+		addLessonI.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent arg0) {	
+				System.out.println("Pressed Add Lesson");
+				
+				AddLessonPanel lp = new AddLessonPanel(model);
+				
+				PopupFrame pf = new PopupFrame(lp);
+				pf.display();
+			}
+		});
+		
+		updateLessonI.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent arg0) {	
+				System.out.println("Pressed Update Lesson");
+				
+				SelectLessonPanel slp = new SelectLessonPanel(model, "Update");
+				PopupFrame pf = new PopupFrame(slp);
+				pf.display();
+			}
+		});
+		
+		removeLessonI.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent arg0) {		
+				System.out.println("Pressed Remove Lesson");
+				
+				SelectLessonPanel slp = new SelectLessonPanel(model, "Remove");
+				PopupFrame pf = new PopupFrame(slp);
+				pf.display();
+			}
+		});
+		
 		nextB.addActionListener(new ActionListener()
 		{
 			@Override
@@ -148,18 +337,6 @@ public class CalendarPanel extends JPanel {
 			}
 		});
 		
-		backB.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent e) {
-				//Remove later when resizing is added
-				model.frame.setSize(new Dimension(500, 700));
-				model.frame.setLocationRelativeTo(null);
-				
-				model.toMainMenu();
-			}
-	
-		});
-		
 		yearC.addActionListener(new ActionListener()
 		{
 			@Override
@@ -177,25 +354,25 @@ public class CalendarPanel extends JPanel {
 	
 	private void buildUI()
 	{
+		model.frame.setJMenuBar(menuBar);
+		
 		this.add(calendarArea);
 		calendarArea.add(monthL);
 		calendarArea.add(yearL);
 		calendarArea.add(yearC);
 		calendarArea.add(prevB);
 		calendarArea.add(nextB);
-		calendarArea.add(backB);
 		calendarArea.add(calendarS);
 		
 		this.add(dayArea);
 		
 		calendarArea.setBounds(0, 0, 700, 640);
-		prevB.setBounds(10, 25, 50, 25);
+		prevB.setBounds(10, 25, 60, 25);
 		monthL.setBounds(350-monthL.getPreferredSize().width/2, 25, 100, 25);
-		nextB.setBounds(640, 25, 50, 25);
+		nextB.setBounds(630, 25, 60, 25);
 		calendarS.setBounds(10, 50, 680, 555);
-		yearL.setBounds(10, 605, 80, 20);
+		yearL.setBounds(10, 605, 100, 20);
 		yearC.setBounds(10 + yearL.getPreferredSize().width + 5, 605, 80, 20);
-		backB.setBounds(610, 605, 80, 25);
 		
 		dayArea.setBounds(710, 0, 480, 640);
 	}

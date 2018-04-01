@@ -2,6 +2,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -12,7 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SpringLayout;
 
-public class HorsePanel extends JPanel{
+public class HorsePanel extends PopupPanel{
 	
 	SpringLayout layout;
 	Model model;
@@ -26,6 +27,8 @@ public class HorsePanel extends JPanel{
 	
 	public HorsePanel (Model model, Horse horse, String varient)
 	{
+		super("Add Horse");
+		
 		this.model = model;
 		MainFrame frame = model.frame;
 		curHorse = horse;
@@ -58,9 +61,7 @@ public class HorsePanel extends JPanel{
 		addActionListeners();
 		buildUI();
 
-		frame.getContentPane().add(this, BorderLayout.CENTER);
-		
-		frame.currentPanel = this;
+		this.setPreferredSize(new Dimension(500, 800));
 	}
 	
 	private void addActionListeners(){
@@ -70,6 +71,13 @@ public class HorsePanel extends JPanel{
 		addUpdateB.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String name = nameT.getText();
+				if(curHorse == null && model.getHorseListByName().containsKey(name))
+				{
+					System.out.println("Name already exists");
+					JOptionPane.showMessageDialog(null, "A horse with this name already exists", "Error", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				
 				int maxTime, minTime, breakTime;
 				ArrayList<LessonType> types = new ArrayList<LessonType>();
 				try
@@ -116,11 +124,17 @@ public class HorsePanel extends JPanel{
 				{
 					model.updateHorse(curHorse, maxTime, minTime);
 				}
-				model.toMainMenu();
+				getFrame().close();
 			}
 		});
 
-		cancelB.addActionListener(model);
+		cancelB.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				getFrame().close();
+			}
+		});
 	}
 	
 	private void buildUI(){
